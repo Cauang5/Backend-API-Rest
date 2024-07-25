@@ -53,5 +53,14 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productRepository.save(productModel));//Salva o objeto atualizado pelo ID específico.
     }
 
+    @DeleteMapping("/products/{id}")// Boas práticas Restful
+    public ResponseEntity<Object> deleteProduct(@PathVariable(value = "id") UUID id){ //Busca um produto pelo ID.
+        Optional<ProductModel> productO = productRepository.findById(id);//Optional retorna um objeto ou pode estar vazia
+        if (productO.isEmpty()){//Checagem pelo Optional, se estiver vazia informa que n foi encontrado
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+        }
+        productRepository.delete(productO.get());//Chama o método delete do JPA
+        return ResponseEntity.status(HttpStatus.OK).body("Product deleted succeessfully");//Confirma a exclusão do produto
+    }
 
 }
