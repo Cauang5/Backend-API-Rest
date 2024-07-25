@@ -41,4 +41,17 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productO.get());//Retorna o produto
     }
 
+    @PutMapping("/products/{id}")// Boas práticas Restful
+    public ResponseEntity<Object> updateProduct(@PathVariable(value = "id") UUID id,
+                                                @RequestBody @Valid ProductRecordDTO productRecordDTO){ //Busca um produto pelo ID e recebe o corpo da requisição para atualizar e validar
+        Optional<ProductModel> productO = productRepository.findById(id);//Optional retorna um objeto ou pode estar vazia
+        if (productO.isEmpty()){//Checagem pelo Optional, se estiver vazia informa que n foi encontrado
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+        }
+        var productModel = new ProductModel(); //Instanciando um objeto do tipo productModel
+        BeanUtils.copyProperties(productRecordDTO, productModel); //Converte um DTO em productModel
+        return ResponseEntity.status(HttpStatus.OK).body(productRepository.save(productModel));//Salva o objeto atualizado pelo ID específico.
+    }
+
+
 }
