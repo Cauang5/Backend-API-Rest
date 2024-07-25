@@ -8,12 +8,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 public class ProductController {
@@ -32,4 +31,14 @@ public class ProductController {
     public ResponseEntity<List<ProductModel>> getAllProducts(){//Gera uma lista de ProductModel
         return ResponseEntity.status(HttpStatus.OK).body(productRepository.findAll());//Retorna todos os produtos
     }
+
+    @GetMapping("/products/{id}")// Boas práticas Restful
+    public ResponseEntity<Object> getProductById(@PathVariable(value = "id") UUID id){//Busca um produto pelo ID, o value = "id", indica que o valor da URL deve ser mapeado pra o parâmetro do método
+        Optional<ProductModel> productO = productRepository.findById(id);//Optional retorna um objeto ou pode estar vazia
+        if (productO.isEmpty()){//Checagem pelo Optional, se estiver vazia informa que n foi encontrado
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(productO.get());//Retorna o produto
+    }
+
 }
